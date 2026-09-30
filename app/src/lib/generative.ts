@@ -196,6 +196,38 @@ export function renderGenerativeImage(opts: GenerateOptions): string {
   ctx.filter = "none";
   ctx.globalCompositeOperation = "source-over";
 
+  // Organic accent shapes (elongated, rotated highlights rather than plain circles)
+  ctx.filter = `blur(${Math.round(18 * scale * 1.4)}px)`;
+  ctx.globalCompositeOperation = "lighten";
+  const accentCount = 2 + Math.floor(rand() * 2);
+  for (let i = 0; i < accentCount; i++) {
+    const color = blobColors[(i + 1) % blobColors.length];
+    const cx = rand() * cw;
+    const cy = rand() * ch * 0.7;
+    const rx = (0.06 + rand() * 0.1) * cw;
+    const ry = rx * (0.3 + rand() * 0.4);
+    const rot = rand() * Math.PI;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(rot);
+    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+    grad.addColorStop(0, hexWithAlpha(color, 0.55));
+    grad.addColorStop(1, hexWithAlpha(color, 0));
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.filter = "none";
+  ctx.globalCompositeOperation = "source-over";
+
+  // Horizon silhouette — gives compositions a sense of place instead of pure abstraction
+  drawHorizonSilhouette(ctx, cw, ch, rand);
+
+  // Bokeh — small soft points of light scattered through the upper frame
+  drawBokeh(ctx, cw, ch, rand, blobColors, scale);
+
   // Fine light rays for cinematic/cyberpunk
   if (opts.style === "cinematic" || opts.style === "cyberpunk") {
     ctx.save();
@@ -248,6 +280,66 @@ export function renderGenerativeImage(opts: GenerateOptions): string {
   }
 
   return canvas.toDataURL("image/jpeg", 0.92);
+}
+
+/** A jagged silhouette anchored to the bottom of the frame — reads as a horizon or skyline. */
+function drawHorizonSilhouette(
+  ctx: CanvasRenderingContext2D,
+  cw: number,
+  ch: number,
+  rand: () => number
+) {
+  const baseline = ch * (0.62 + rand() * 0.16);
+  const peakHeight = ch * (0.08 + rand() * 0.14);
+  const points = 7 + Math.floor(rand() * 5);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(0, ch);
+  ctx.lineTo(0, baseline);
+  for (let i = 0; i <= points; i++) {
+    const x = (cw / points) * i;
+    const jitter = (rand() - 0.5) * peakHeight * 1.4;
+    const y = baseline - Math.abs(Math.sin(i * 1.3 + rand() * 2)) * peakHeight - jitter * 0.3;
+    ctx.lineTo(x, Math.max(y, baseline - peakHeight * 1.6));
+  }
+  ctx.lineTo(cw, ch);
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0, baseline - peakHeight, 0, ch);
+  grad.addColorStop(0, "rgba(2, 3, 5, 0.75)");
+  grad.addColorStop(1, "rgba(0, 0, 0, 0.92)");
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.restore();
+}
+
+/** Small soft points of light scattered through the frame, like out-of-focus bokeh. */
+function drawBokeh(
+  ctx: CanvasRenderingContext2D,
+  cw: number,
+  ch: number,
+  rand: () => number,
+  colors: string[],
+  scale: number
+) {
+  const count = 10 + Math.floor(rand() * 10);
+  ctx.save();
+  ctx.filter = `blur(${Math.max(1, Math.round(2 * scale))}px)`;
+  for (let i = 0; i < count; i++) {
+    const r = (3 + rand() * 22) * scale;
+    const x = rand() * cw;
+    const y = rand() * ch * 0.75;
+    const color = rand() > 0.6 ? "#ffffff" : colors[Math.floor(rand() * colors.length)];
+    const alpha = 0.08 + rand() * 0.3;
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+    grad.addColorStop(0, hexWithAlpha(color, alpha));
+    grad.addColorStop(1, hexWithAlpha(color, 0));
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
 }
 
 function hexWithAlpha(hex: string, alpha: number): string {
