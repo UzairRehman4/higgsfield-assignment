@@ -1,4 +1,6 @@
+import { AnimatePresence, motion } from "framer-motion";
 import type { Generation } from "../lib/types";
+import { useToastStore } from "../store/useToastStore";
 
 interface ResultStageProps {
   stage: "idle" | "loading" | "result" | "error";
@@ -27,6 +29,7 @@ export function ResultStage({
   onExpand,
   isFavorite,
 }: ResultStageProps) {
+  const showToast = useToastStore((s) => s.show);
   const aspect = `${ratio.w} / ${ratio.h}`;
 
   if (stage === "loading") {
@@ -41,13 +44,27 @@ export function ResultStage({
           </div>
         </div>
         <div className="w-full max-w-md">
-          <div className="mb-2 h-1 w-full overflow-hidden rounded-full bg-surface-raised">
-            <div
-              className="h-full rounded-full bg-accent transition-all duration-500 ease-out"
-              style={{ width: `${((stepIndex + 1) / steps.length) * 100}%` }}
+          <div className="mb-2.5 h-1 w-full overflow-hidden rounded-full bg-surface-raised">
+            <motion.div
+              className="h-full rounded-full bg-accent"
+              animate={{ width: `${((stepIndex + 1) / steps.length) * 100}%` }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
             />
           </div>
-          <p className="text-center text-sm text-muted">{steps[stepIndex]}…</p>
+          <div className="relative h-5 overflow-hidden text-center">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={stepIndex}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+                className="text-sm text-muted"
+              >
+                {steps[stepIndex]}…
+              </motion.p>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     );
@@ -55,7 +72,11 @@ export function ResultStage({
 
   if (stage === "error") {
     return (
-      <div className="mx-auto flex h-full max-w-md flex-col items-center justify-center gap-4 text-center">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="mx-auto flex h-full max-w-md flex-col items-center justify-center gap-4 text-center"
+      >
         <div className="grid h-12 w-12 place-items-center rounded-full border border-danger/40 bg-danger/10 text-danger">
           !
         </div>
@@ -66,13 +87,18 @@ export function ResultStage({
         >
           Try again
         </button>
-      </div>
+      </motion.div>
     );
   }
 
   if (stage === "result" && current) {
     return (
-      <div className="mx-auto flex h-full max-w-2xl flex-col items-center justify-center gap-4 fade-up">
+      <motion.div
+        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="mx-auto flex h-full max-w-2xl flex-col items-center justify-center gap-4"
+      >
         <button
           onClick={onExpand}
           className="group relative w-full max-w-md overflow-hidden rounded-2xl border border-border-soft bg-surface"
@@ -90,6 +116,8 @@ export function ResultStage({
           </span>
         </button>
 
+        <p className="w-full max-w-md truncate text-center text-xs text-faint">{current.prompt}</p>
+
         <div className="flex w-full max-w-md items-center justify-between gap-2">
           <button
             onClick={onFavorite}
@@ -104,6 +132,7 @@ export function ResultStage({
           <a
             href={current.imageDataUrl}
             download={`lumen-${current.id.slice(0, 8)}.jpg`}
+            onClick={() => showToast("Image downloaded")}
             className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-muted transition-colors hover:text-ink"
           >
             Download
@@ -115,7 +144,7 @@ export function ResultStage({
             Regenerate
           </button>
         </div>
-      </div>
+      </motion.div>
     );
   }
 

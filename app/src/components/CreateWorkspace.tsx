@@ -100,6 +100,13 @@ export function CreateWorkspace({
     runGeneration(prompt.trim(), aspectRatio, style);
   }
 
+  function handlePromptKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      handleGenerate();
+    }
+  }
+
   function handleRegenerate() {
     if (!current) return;
     if (credits < GENERATION_COST) {
@@ -113,22 +120,25 @@ export function CreateWorkspace({
   const ratio = ASPECT_RATIOS[aspectRatio];
 
   return (
-    <div className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[360px_1fr]">
-      <aside className="flex min-h-0 flex-col gap-5 overflow-y-auto border-b border-border-soft p-5 lg:border-b-0 lg:border-r">
-        <div>
-          <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-faint">
+    <div className="grid h-full min-h-0 grid-cols-1 overflow-y-auto lg:grid-cols-[380px_1fr] lg:overflow-hidden">
+      <aside className="flex flex-col divide-y divide-border-soft border-b border-border-soft lg:min-h-0 lg:overflow-y-auto lg:border-b-0 lg:border-r">
+        <div className="p-5">
+          <label className="mb-2 flex items-center justify-between text-xs font-medium uppercase tracking-wide text-faint">
             Prompt
+            <span className="normal-case tracking-normal text-faint/70">⌘⏎ to generate</span>
           </label>
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handlePromptKeyDown}
             placeholder="A lone lighthouse on a cliff at dusk, storm rolling in over the sea…"
-            rows={4}
-            className="w-full resize-none rounded-xl border border-border bg-surface px-3 py-2.5 text-sm text-ink placeholder:text-faint focus:border-accent/50 focus:outline-none"
+            rows={5}
+            autoFocus
+            className="w-full resize-none rounded-xl border border-border bg-surface px-3.5 py-3 text-[15px] leading-relaxed text-ink placeholder:text-faint transition-colors focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/10"
           />
         </div>
 
-        <div>
+        <div className="p-5">
           <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-faint">
             Reference
           </label>
@@ -145,32 +155,33 @@ export function CreateWorkspace({
           />
         </div>
 
-        <div>
+        <div className="p-5">
           <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-faint">
             Aspect ratio
           </label>
           <AspectRatioPicker value={aspectRatio} onChange={setAspectRatio} />
         </div>
 
-        <div>
+        <div className="p-5">
           <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-faint">
             Style
           </label>
           <StylePicker value={style} onChange={setStyle} />
         </div>
 
-        <div className="mt-auto pt-2">
+        <div className="mt-auto p-5">
           {!canAfford && (
-            <p className="mb-2 text-xs text-danger">
-              Not enough credits. Open the credits menu in the header to reset your balance.
-            </p>
+            <div className="mb-3 flex items-start gap-2 rounded-lg border border-danger/25 bg-danger/8 px-3 py-2.5 text-xs leading-relaxed text-danger">
+              <span className="mt-px shrink-0">●</span>
+              <span>Out of credits. Open the credits menu in the header to reset your balance.</span>
+            </div>
           )}
           <button
             onClick={handleGenerate}
             disabled={!canGenerate}
-            className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+            className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3.5 text-sm font-semibold transition-all ${
               canGenerate
-                ? "bg-accent text-black hover:scale-[1.01] active:scale-[0.99]"
+                ? "bg-accent text-black shadow-lg shadow-accent/10 hover:scale-[1.01] hover:shadow-accent/20 active:scale-[0.99]"
                 : "cursor-not-allowed bg-surface-raised text-faint"
             }`}
           >
@@ -186,7 +197,7 @@ export function CreateWorkspace({
         </div>
       </aside>
 
-      <section className="relative min-h-0 overflow-y-auto p-5 sm:p-8">
+      <section className="relative p-5 sm:p-8 lg:min-h-0 lg:overflow-y-auto">
         <ResultStage
           stage={stage}
           stepIndex={stepIndex}

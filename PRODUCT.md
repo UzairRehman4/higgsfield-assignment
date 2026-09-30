@@ -51,6 +51,51 @@ deadline. Building one thing well beats scaffolding ten things badly.
   view only existed inside a specific tool's History tab. In Lumen, every
   thumbnail (library grid or inline result) opens the same one detail view.
 
+## Final UX decisions (visual/product-quality pass)
+
+After the core loop was working end-to-end, we did a dedicated design pass
+rather than shipping the first working version as final.
+
+**Landing page.** The app initially opened straight into the workspace,
+which meant an evaluator's first impression was an empty prompt box with no
+context. We added a real landing page: a hero with a generated centerpiece
+image, a showcase grid across six visual categories (all rendered by our
+own engine, not stock photography), an "Imagine → Create → Refine → Keep"
+workflow explainer, an honest capability list (only things that actually
+exist), and a final CTA — closing with "Start creating," which leads
+straight into the real workspace so the promise and the product are the
+same screen system, not a disconnected marketing site.
+
+**Kept:** the chip-based settings row, inline cost-on-button, and
+date-grouped library from the first pass — those already tested well.
+
+**Changed:**
+- Style picker gained a color swatch per option (a quick visual preview of
+  what each style tends to produce) instead of text-only rows.
+- The result and detail views moved from a plain metadata table to pill-style
+  tags (style / ratio / cost), which scan faster and match the chip language
+  used everywhere else in the app.
+- Added `⌘/Ctrl + Enter` to generate from the prompt box, and a lightweight
+  toast for download/delete feedback, since silent actions felt incomplete.
+- Replaced the plain "not enough credits" line with a bordered callout that
+  matches the visual weight of an actual blocking state, not an afterthought.
+- Empty library state now has an icon, one line of copy, and a direct
+  "Start creating" CTA instead of a bare sentence.
+
+**Fixed during this pass:** the create workspace's two-panel grid used
+independent `overflow-y-auto` scroll regions sized for desktop; on mobile
+(single-column) this clipped content instead of scrolling, because neither
+panel had a bounded height to scroll within. Fixed by making the whole
+workspace scroll as one column on mobile and only splitting into two
+independently-scrolling panes at the desktop breakpoint.
+
+**Deliberately not done:** no new features were added to make the product
+look bigger (per the explicit instruction) — every change in this pass is
+either presentation of existing functionality (landing page, motion,
+metadata layout) or a genuine bug fix (mobile scroll). The generation
+engine, credit mechanic, and navigation scope are unchanged from the
+original MVP decision.
+
 ## Technical decision: why no external AI image API
 
 The assignment requires the app to: run for an unauthenticated evaluator,
@@ -62,3 +107,11 @@ friction that risks a broken demo). A deterministic, seeded, in-browser
 generative-art renderer sidesteps all of that: it is reliable, free to run,
 requires nothing from the evaluator, and is explicitly presented as a
 generation *simulation* rather than passed off as a real model call.
+
+We did check for a genuinely free, no-key alternative mid-project
+(Pollinations.ai). It works and needs no API key, but its free tier forces
+a visible third-party watermark on every image (`nologo=true` returns
+`402 Payment Required`) and it's an unauthenticated public rate-limited
+service — both directly conflict with "recognizable as Lumen" and with
+demo reliability for the evaluator, so we kept the in-house engine as the
+only generation path.

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import type { Generation } from "../lib/types";
 import { useAppStore } from "../store/useAppStore";
 
@@ -14,7 +15,13 @@ function dateGroupLabel(ts: number): string {
   return d.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
 }
 
-export function LibraryView({ onOpen }: { onOpen: (gen: Generation) => void }) {
+export function LibraryView({
+  onOpen,
+  onStartCreating,
+}: {
+  onOpen: (gen: Generation) => void;
+  onStartCreating: () => void;
+}) {
   const generations = useAppStore((s) => s.generations);
   const toggleFavorite = useAppStore((s) => s.toggleFavorite);
   const [filter, setFilter] = useState<"all" | "favorites">("all");
@@ -33,9 +40,20 @@ export function LibraryView({ onOpen }: { onOpen: (gen: Generation) => void }) {
 
   if (generations.length === 0) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-        <p className="text-sm text-muted">Nothing generated yet.</p>
-        <p className="text-xs text-faint">Head to Create to make your first image.</p>
+      <div className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <div className="grid h-14 w-14 place-items-center rounded-2xl border border-dashed border-border-soft text-xl text-faint">
+          ◇
+        </div>
+        <div>
+          <p className="text-sm font-medium text-ink">Your library is empty</p>
+          <p className="mt-1 text-sm text-faint">Everything you generate is saved here automatically.</p>
+        </div>
+        <button
+          onClick={onStartCreating}
+          className="rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02] active:scale-[0.98]"
+        >
+          Start creating
+        </button>
       </div>
     );
   }
@@ -55,18 +73,21 @@ export function LibraryView({ onOpen }: { onOpen: (gen: Generation) => void }) {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-sm text-faint">No favorites yet.</p>
+        <p className="text-sm text-faint">No favorites yet — tap the star on any generation to save it here.</p>
       ) : (
         <div className="flex flex-col gap-8">
           {groups.map(([label, items]) => (
             <section key={label}>
               <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-faint">{label}</h2>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                {items.map((gen) => (
-                  <button
+                {items.map((gen, i) => (
+                  <motion.button
                     key={gen.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: Math.min(i, 8) * 0.04 }}
                     onClick={() => onOpen(gen)}
-                    className="group relative overflow-hidden rounded-xl border border-border-soft bg-surface text-left"
+                    className="group relative overflow-hidden rounded-xl border border-border-soft bg-surface text-left transition-colors hover:border-border"
                   >
                     <img
                       src={gen.imageDataUrl}
@@ -82,13 +103,15 @@ export function LibraryView({ onOpen }: { onOpen: (gen: Generation) => void }) {
                         e.stopPropagation();
                         toggleFavorite(gen.id);
                       }}
-                      className={`absolute right-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-full text-xs backdrop-blur transition-colors ${
-                        gen.favorite ? "bg-accent text-black" : "bg-black/50 text-ink opacity-0 group-hover:opacity-100"
+                      className={`absolute right-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-full text-xs backdrop-blur transition-all ${
+                        gen.favorite
+                          ? "bg-accent text-black opacity-100"
+                          : "bg-black/50 text-ink opacity-0 group-hover:opacity-100"
                       }`}
                     >
                       {gen.favorite ? "★" : "☆"}
                     </span>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </section>
