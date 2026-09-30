@@ -63,7 +63,7 @@ export function ResultOverlay({
 
         <div className="flex w-full flex-col gap-5 overflow-y-auto p-5 md:w-80">
           <div className="flex items-start justify-between gap-2">
-            <h2 className="font-display text-xl italic leading-snug">Generation details</h2>
+            <h2 className="font-display text-xl font-bold leading-snug">Generation details</h2>
             <button
               onClick={onClose}
               className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-faint transition-colors hover:bg-surface-raised hover:text-ink"

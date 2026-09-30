@@ -20,7 +20,7 @@ export function AppShell({ view, onNavigate, onHome, historyCount, children }: A
             <span className="grid h-6 w-6 place-items-center rounded-md bg-accent text-[13px] font-bold text-black">
               ◆
             </span>
-            <span className="font-display text-lg italic tracking-tight">Lumen</span>
+            <span className="font-display text-lg font-bold tracking-tight">Lumen</span>
           </button>
           <nav className="hidden items-center gap-1 sm:flex">
             <NavButton active={view === "create"} onClick={() => onNavigate("create")}>

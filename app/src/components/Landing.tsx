@@ -52,7 +52,7 @@ export function Landing({
           <span className="grid h-6 w-6 place-items-center rounded-md bg-accent text-[13px] font-bold text-black">
             ◆
           </span>
-          <span className="font-display text-lg italic tracking-tight">Lumen</span>
+          <span className="font-display text-lg font-bold tracking-tight">Lumen</span>
         </div>
         <button
           onClick={onStartCreating}
@@ -72,7 +72,7 @@ export function Landing({
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-faint">
             A focused AI image studio
           </p>
-          <h1 className="font-display text-4xl italic leading-[1.05] sm:text-5xl">
+          <h1 className="font-display text-4xl font-bold leading-[1.05] sm:text-5xl">
             AI image creation,
             <br />
             designed around your ideas.
@@ -160,7 +160,7 @@ export function Landing({
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
             >
-              <span className="font-display text-2xl italic text-accent">{w.step}</span>
+              <span className="font-display text-2xl font-bold text-accent">{w.step}</span>
               <h3 className="mt-2 text-base font-semibold">{w.title}</h3>
               <p className="mt-1 text-sm leading-relaxed text-muted">{w.copy}</p>
             </motion.div>
@@ -184,7 +184,7 @@ export function Landing({
       <section className="mx-auto max-w-6xl px-5 pb-24 pt-8 sm:px-8 sm:pb-32">
         <div className="flex flex-col items-start gap-5 rounded-2xl border border-border-soft bg-surface px-6 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-10">
           <div>
-            <h2 className="font-display text-2xl italic">Ready when you are.</h2>
+            <h2 className="font-display text-2xl font-bold">Ready when you are.</h2>
             <p className="mt-1 text-sm text-muted">Your first twelve credits are on the house.</p>
           </div>
           <button
@@ -215,7 +215,7 @@ function Section({
   return (
     <section className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
       <div className="mb-8">
-        <h2 className="font-display text-2xl italic">{title}</h2>
+        <h2 className="font-display text-2xl font-bold">{title}</h2>
         <p className="mt-1 text-sm text-muted">{subtitle}</p>
       </div>
       {children}

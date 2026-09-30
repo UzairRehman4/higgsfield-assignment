@@ -89,6 +89,20 @@ panel had a bounded height to scroll within. Fixed by making the whole
 workspace scroll as one column on mobile and only splitting into two
 independently-scrolling panes at the desktop breakpoint.
 
+**Visual identity — explicit override, documented for transparency.** The
+brief for this assignment (and our own earlier product-judgement writeup
+above) explicitly said not to copy Higgsfield's colors or visual identity.
+Later in the project the user explicitly asked to match Higgsfield's actual
+look and, when told this contradicted the brief, confirmed they wanted to
+override it anyway. We pulled the real values via computed styles on
+higgsfield.ai rather than guessing: background `#0F1113`, text `#F7F7F8`,
+brand accent `#D1FE17` (their exact lime-green), body font Inter (already
+matched), and heading font Space Grotesk (bold, not italic — swapped from
+the original Instrument Serif). This is a deliberate, requested departure
+from the brief's own instruction, made with the tradeoff stated plainly
+rather than silently — worth knowing if this is reviewed against the
+original brief text.
+
 **Deliberately not done:** no new features were added to make the product
 look bigger (per the explicit instruction) — every change in this pass is
 either presentation of existing functionality (landing page, motion,

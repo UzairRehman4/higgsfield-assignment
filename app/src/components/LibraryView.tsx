@@ -61,7 +61,7 @@ export function LibraryView({
   return (
     <div className="h-full overflow-y-auto p-5 sm:p-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl italic">Library</h1>
+        <h1 className="font-display text-2xl font-bold">Library</h1>
         <div className="flex gap-1 rounded-lg border border-border bg-surface p-1">
           <FilterTab active={filter === "all"} onClick={() => setFilter("all")}>
             All ({generations.length})
