@@ -1,5 +1,8 @@
 # Lumen — AI Image Studio
 
+**Live:** https://app-one-eta-89.vercel.app
+**Repo:** https://github.com/UzairRehman4/higgsfield-assignment
+
 A focused, Higgsfield-inspired AI image creation product, built for the 8x
 "clone a live product in 24 hours" assignment. Not a pixel clone — see
 `../recon/NOTES.md` for the authenticated product research this is based on,
